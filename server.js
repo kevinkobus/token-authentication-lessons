@@ -13,7 +13,7 @@ mongoose
   .then(() => console.log("Connected to the DB"));
 
 app.use("/auth", require("./routes/authRouter.js"));
-// app.use("/todo", require("./routes/todoRouter.js"));
+app.use("/todo", require("./routes/todoRouter.js"));
 
 app.use((err, req, res, next) => {
   console.log(err);

@@ -6,7 +6,7 @@ const jwt = require("jsonwebtoken");
 // Signup
 authRouter.post("/signup", (req, res, next) => {
   //check if the username already exists
-  User.findOne({ username: req.body.username })
+  User.findOne({ username: req.body.username.toLowerCase() })
     // if the username already exists, return error message
     .then((user) => {
       if (user) {
@@ -31,24 +31,27 @@ authRouter.post("/signup", (req, res, next) => {
 });
 
 // Login
-
-// authRouter.post("/login", (req, res, next) => {
-//   // check if login info exists and/or is accurate
-//   User.findOne({ username: req.body.username.toLowerCase() })
-//   .then((user) => {
-//     // if doesn't exist and/or is not accurate throw this error message
-//     if (!user) {
-//       res.status(403);
-//       return next(new Error("Username or Password are incorrect"));
-//     }
-//     // otherwise return the token and user (payload, secret from .env)
-//     const token = jwt.sign(user.toObject(), process.env.SECRET);
-//     return res.status(200).send({ token, user })
-//       .catch((err) => {
-//         res.status(500);
-//         return next(err);
-//       });
-//   });
-// });
+authRouter.post("/login", (req, res, next) => {
+  // check if login info exists and/or is accurate
+  User.findOne({ username: req.body.username.toLowerCase() })
+    .then((user) => {
+      // if doesn't exist and/or is not accurate throw this error message
+      if (!user) {
+        res.status(403);
+        return next(new Error("Username or Password are incorrect"));
+      }
+      if (req.body.password !== user.password) {
+        res.status(403)
+        return next(new Error("Username or Password are incorrect"))
+      }
+      // otherwise return the token and user (payload, secret from .env)
+      const token = jwt.sign(user.toObject(), process.env.SECRET);
+      return res.status(200).send({ token, user });
+    })
+    .catch((err) => {
+      res.status(500);
+      return next(err);
+    });
+});
 
 module.exports = authRouter;
