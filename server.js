@@ -5,17 +5,15 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 // const {expressjwt} = require("express-jwt")
 
-
 app.use(express.json());
 app.use(morgan("dev"));
 
-mongoose.connect(
-  "mongodb://localhost:27017/user-authentication",
-  () => console.log("Connected to the DB")
-);
+mongoose
+  .connect("mongodb://localhost:27017/user-authentication")
+  .then(() => console.log("Connected to the DB"));
 
 app.use("/auth", require("./routes/authRouter.js"));
-app.use("/todo", require("./routes/todoRouter.js"));
+// app.use("/todo", require("./routes/todoRouter.js"));
 
 app.use((err, req, res, next) => {
   console.log(err);

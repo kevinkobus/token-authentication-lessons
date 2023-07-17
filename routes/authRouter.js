@@ -51,4 +51,4 @@ authRouter.post("/signup", (req, res, next) => {
 //   });
 // });
 
-module.export = authRouter;
+module.exports = authRouter;
