@@ -1,58 +1,65 @@
-const express = require("express")
-const todoRouter = express.Router()
-const Todo = require('../models/Todo.js')
+const express = require("express");
+const todoRouter = express.Router();
+const Todo = require("../models/Todo.js");
 
 // Get All Todos
 todoRouter.get("/", (req, res, next) => {
-  Todo.find((err, todos) => {
-    if(err){
-      res.status(500)
-      return next(err)
-    }
-    return res.status(200).send(todos)
-  })
-})
+  Todo.find({})
+    .then((todos) => {
+      return res.status(200).send(todos);
+    })
+    .catch((err) => {
+      res.status(500);
+      return next(err);
+    });
+});
 
 // Add new Todo
 todoRouter.post("/", (req, res, next) => {
-  const newTodo = new Todo(req.body)
-  newTodo.save((err, savedTodo) => {
-    if(err){
-      res.status(500)
-      return next(err)
-    }
-    return res.status(201).send(savedTodo)
-  })
-})
+  const newTodo = new Todo(req.body);
+  newTodo
+    .save()
+    .then((savedTodo) => {
+      return res.status(201).send(savedTodo);
+    })
+    .catch((err) => {
+      res.status(500);
+      return next(err);
+    });
+});
 
 // Delete Todo
 todoRouter.delete("/:todoId", (req, res, next) => {
-  Todo.findOneAndDelete(
-    { _id: req.params.todoId },
-    (err, deletedTodo) => {
-      if(err){
-        res.status(500)
-        return next(err)
+  Todo.findOneAndDelete({ _id: req.params.todoId })
+    .then((deletedTodo) => {
+      if (!deletedTodo) {
+        return res.status(404).send("Todo not found");
       }
-      return res.status(200).send(`Successfully delete todo: ${deletedTodo.title}`)
-    }
-  )
-})
+      return res
+        .status(200)
+        .send(
+          `Successfully deleted todo: ${deletedTodo.title} from the database`
+        );
+    })
+    .catch((err) => {
+      res.status(500);
+      return next(err);
+    });
+});
 
 // Update Todo
 todoRouter.put("/:todoId", (req, res, next) => {
-  Todo.findOneAndUpdate(
-    { _id: req.params.todoId },
-    req.body,
-    { new: true },
-    (err, updatedTodo) => {
-      if(err){
-        res.status(500)
-        return next(err)
+  Todo.findOneAndUpdate({ _id: req.params.todoId }, req.body, { new: true })
+    .then((updatedTodo) => {
+      if (!updatedTodo) {
+        return res.status(404).send("Todo not found");
       }
-      return res.status(201).send(updatedTodo)
-    }
-  )
-})
+      return res.status(200).send(updatedTodo);
+    })
+    .catch((err) => {
+      res.status(500);
+      return next(err);
+    });
+});
 
-module.exports = todoRouter
+module.exports = todoRouter;
