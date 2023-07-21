@@ -16,6 +16,7 @@ todoRouter.get("/", (req, res, next) => {
 
 // Add new Todo
 todoRouter.post("/", (req, res, next) => {
+  req.body.user = req.auth._id;
   const newTodo = new Todo(req.body);
   newTodo
     .save()
@@ -30,7 +31,7 @@ todoRouter.post("/", (req, res, next) => {
 
 // Delete Todo
 todoRouter.delete("/:todoId", (req, res, next) => {
-  Todo.findOneAndDelete({ _id: req.params.todoId })
+  Todo.findOneAndDelete({ _id: req.params.todoId, user: req.auth._id })
     .then((deletedTodo) => {
       if (!deletedTodo) {
         return res.status(404).send("Todo not found");
@@ -49,7 +50,11 @@ todoRouter.delete("/:todoId", (req, res, next) => {
 
 // Update Todo
 todoRouter.put("/:todoId", (req, res, next) => {
-  Todo.findOneAndUpdate({ _id: req.params.todoId }, req.body, { new: true })
+  Todo.findOneAndUpdate(
+    { _id: req.params.todoId, user: req.auth._id },
+    req.body,
+    { new: true }
+  )
     .then((updatedTodo) => {
       if (!updatedTodo) {
         return res.status(404).send("Todo not found");
@@ -62,4 +67,18 @@ todoRouter.put("/:todoId", (req, res, next) => {
     });
 });
 
+// Get todos by user id
+todoRouter.get("/user", (req, res, next) => {
+  Todo.find({ user: req.auth._id })
+    .then((foundTodos) => {
+      if (!foundTodos) {
+        return res.status(404).send("Todo not found");
+      }
+      return res.status(200).send(foundTodos);
+    })
+    .catch((err) => {
+      res.status(500);
+      return next(err);
+    });
+});
 module.exports = todoRouter;
