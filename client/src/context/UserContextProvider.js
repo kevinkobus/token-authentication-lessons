@@ -48,6 +48,7 @@ function UserContextProvider(props) {
         const { user, token } = res.data;
         localStorage.setItem("token", token); //saving the token data to localStorage so not to lose it after browser refresh
         localStorage.setItem("user", JSON.stringify(user)); //saving the user data to localStorage so not to lose it after browser refresh
+        getUserTodos();
         setUserState((prevUserState) => ({
           ...prevUserState,
           user,
@@ -59,7 +60,7 @@ function UserContextProvider(props) {
   }
 
   // User logout which removes user info from localStorage and resets state
-  function logout(){
+  function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUserState({
@@ -69,12 +70,27 @@ function UserContextProvider(props) {
     });
   }
 
-  // console.log(localStorage)
+  function getUserTodos() {
+    userAxios
+      .get("/api/todo/user")
+      .then((res) => {
+        setUserState((prevState) => ({
+          ...prevState,
+          todos: [...prevState.todos, res.data],
+        }));
+      })
+      .catch((err) => console.log(err.response.data.errMsg));
+  }
 
   function addTodo(newTodo) {
     userAxios
       .post("/api/todo", newTodo)
-      .then((res) => console.log(res))
+      .then((res) => {
+        setUserState((prevState) => ({
+          ...prevState,
+          todos: [...prevState.todos, res.data],
+        }));
+      })
       .catch((err) => console.log(err.response.data.errMsg));
   }
 
