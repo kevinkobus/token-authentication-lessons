@@ -73,10 +73,11 @@ function UserContextProvider(props) {
   function getUserTodos() {
     userAxios
       .get("/api/todo/user")
+      // .then((res) => console.log(res))
       .then((res) => {
         setUserState((prevState) => ({
           ...prevState,
-          todos: [...prevState.todos, res.data],
+          todos: res.data,
         }));
       })
       .catch((err) => console.log(err.response.data.errMsg));

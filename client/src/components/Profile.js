@@ -16,7 +16,7 @@ export default function Profile() {
       <h3>Add A Todo</h3>
       <TodoForm addTodo={addTodo} />
       <h3>Your Todos</h3>
-      <TodoList todos={todos}/>
+      <TodoList todos={todos} />
     </div>
   );
 }
