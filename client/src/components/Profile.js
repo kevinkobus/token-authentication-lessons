@@ -10,6 +10,7 @@ export default function Profile() {
     addTodo,
     todos,
   } = useContext(UserContext);
+  
   return (
     <div className="profile">
       <h1>Welcome @{username}!</h1>
