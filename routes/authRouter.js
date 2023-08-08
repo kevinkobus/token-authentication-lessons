@@ -40,10 +40,22 @@ authRouter.post("/login", (req, res, next) => {
         res.status(403);
         return next(new Error("Username or Password are incorrect"));
       }
-      if (req.body.password !== user.password) {
-        res.status(403)
-        return next(new Error("Username or Password are incorrect"))
-      }
+      // manual way to check if password is correct
+      // if (req.body.password !== user.password) {
+      //   res.status(403)
+      //   return next(new Error("Username or Password are incorrect"))
+      // }
+      // bcrypt way of checking if password is correct
+      user.checkPassword(req.body.password, (err, isMatch) => {
+        if(err){
+          res.status(403)
+          return next(new Error("Username and/or Password are incorrect"))
+        }
+        if(!isMatch){
+          res.status(403)
+          return next(new Error("Username and/or Password are incorrect"))
+        }
+      })
       // otherwise return the token and user (payload, secret from .env)
       const token = jwt.sign(user.toObject(), process.env.SECRET);
       return res.status(200).send({ token, user });
