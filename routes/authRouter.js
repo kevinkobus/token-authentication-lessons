@@ -20,8 +20,8 @@ authRouter.post("/signup", (req, res, next) => {
         .save()
         .then((savedUser) => {
           // return the token and user (payload, secret from .env)
-          const token = jwt.sign(savedUser.toObject(), process.env.SECRET);
-          return res.status(200).send({ token, user: savedUser });
+          const token = jwt.sign(savedUser.withoutPassword(), process.env.SECRET);
+          return res.status(200).send({ token, user: savedUser.withoutPassword() });
         })
         .catch((err) => {
           res.status(500);
@@ -57,8 +57,8 @@ authRouter.post("/login", (req, res, next) => {
         }
       })
       // otherwise return the token and user (payload, secret from .env)
-      const token = jwt.sign(user.toObject(), process.env.SECRET);
-      return res.status(200).send({ token, user });
+      const token = jwt.sign(user.withoutPassword(), process.env.SECRET);
+      return res.status(200).send({ token, user: user.withoutPassword() });
     })
     .catch((err) => {
       res.status(500);
