@@ -55,10 +55,10 @@ authRouter.post("/login", (req, res, next) => {
           res.status(403)
           return next(new Error("Username and/or Password are incorrect"))
         }
-      })
-      // otherwise return the token and user (payload, secret from .env)
+        // otherwise return the token and user (payload, secret from .env)
       const token = jwt.sign(user.withoutPassword(), process.env.SECRET);
       return res.status(200).send({ token, user: user.withoutPassword() });
+      })
     })
     .catch((err) => {
       res.status(500);

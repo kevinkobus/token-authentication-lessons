@@ -18,6 +18,7 @@ function UserContextProvider(props) {
     user: JSON.parse(localStorage.getItem("user")) || {},
     token: localStorage.getItem("token") || "",
     todos: [],
+    errMsg: "",
   };
 
   // Set state for user's info and set initState from above as default
@@ -38,7 +39,7 @@ function UserContextProvider(props) {
         }));
       })
       // .catch(err => console.dir(err))
-      .catch((err) => console.log(err.response.data.errMsg));
+      .catch((err) => handleAuthErr(err.response.data.errMsg));
   }
   // User login
   function login(credentials) {
@@ -56,7 +57,7 @@ function UserContextProvider(props) {
         }));
       })
       // .catch(err => console.dir(err))
-      .catch((err) => console.log(err.response.data.errMsg));
+      .catch((err) => handleAuthErr(err.response.data.errMsg));
   }
 
   // User logout which removes user info from localStorage and resets state
@@ -68,6 +69,20 @@ function UserContextProvider(props) {
       token: "",
       todos: [],
     });
+  }
+
+  function handleAuthErr(errMsg) {
+    setUserState((prevState) => ({
+      ...prevState,
+      errMsg,
+    }));
+  }
+
+  function resetAuthErr() {
+    setUserState((prevState) => ({
+      ...prevState,
+      errMsg: "",
+    }));
   }
 
   function getUserTodos() {
@@ -104,6 +119,7 @@ function UserContextProvider(props) {
         login,
         logout,
         addTodo,
+        resetAuthErr,
       }}
     >
       {props.children}
